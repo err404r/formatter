@@ -1,0 +1,2 @@
+--format ESRFormatter
+--require ../lib/esr_formatter.rb

@@ -15,7 +15,13 @@ Permission to waive conditions of this license may be requested from Windy Road 
 
 	<xs:simpleType name="ISO8601_DATETIME_PATTERN">
 		<xs:restriction base="xs:dateTime">
-			<xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"/>
+			<xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2}:[0-9]{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="pre-string">
+		<xs:restriction base="xs:string">
+			<xs:whiteSpace value="preserve"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -53,77 +59,112 @@ Permission to waive conditions of this license may be requested from Windy Road 
 		</xs:annotation>
 		<xs:sequence>
 
-			<xs:element name="properties">
-				<xs:annotation>
-					<xs:documentation xml:lang="en">Properties (e.g., environment settings) set during test execution</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
-							<xs:complexType>
-								<xs:attribute name="name" use="required">
-									<xs:simpleType>
-										<xs:restriction base="xs:token">
-											<xs:minLength value="1"/>
-										</xs:restriction>
-									</xs:simpleType>
-								</xs:attribute>
-								<xs:attribute name="value" type="xs:string" use="required"/>
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
 
 			<xs:element name="testcase" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:choice minOccurs="0">
+          <xs:sequence>
 
-						<xs:element name="error">
+            <xs:choice>
+
+              <xs:element name="error">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Indicates that the test errored.  An errored test is one that had an unanticipated problem. e.g., an unchecked throwable; or a problem with the implementation of the test. Contains as a text node relevant data for the error, e.g., a stack trace</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="pre-string">
+                      <xs:attribute name="message" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation xml:lang="en">The error message. e.g., if a java exception is thrown, the return value of getMessage()</xs:documentation>
+                        </xs:annotation>
+                      </xs:attribute>
+                      <xs:attribute name="type" type="xs:string" use="required">
+                        <xs:annotation>
+                          <xs:documentation xml:lang="en">The type of error that occured. e.g., if a java execption is thrown the full class name of the exception.</xs:documentation>
+                        </xs:annotation>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="failure">
+                <xs:annotation>
+                  <xs:documentation xml:lang="en">Indicates that the test failed. A failure is a test which the code has explicitly failed by using the mechanisms for that purpose. e.g., via an assertEquals. Contains as a text node relevant data for the failure, e.g., a stack trace</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="pre-string">
+                      <xs:attribute name="message" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation xml:lang="en">The message specified in the assert</xs:documentation>
+                        </xs:annotation>
+                      </xs:attribute>
+                      <xs:attribute name="type" type="xs:string" use="required">
+                        <xs:annotation>
+                          <xs:documentation xml:lang="en">The type of the assert.</xs:documentation>
+                        </xs:annotation>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="success">
+                <xs:complexType/>
+              </xs:element>
+
+              <xs:element name="skipped">
+                <xs:complexType/>
+              </xs:element>
+
+            </xs:choice>
+
+            <xs:element name="properties">
               <xs:annotation>
-                <xs:documentation xml:lang="en">Indicates that the test errored.  An errored test is one that had an unanticipated problem. e.g., an unchecked throwable; or a problem with the implementation of the test. Contains as a text node relevant data for the error, e.g., a stack trace</xs:documentation>
+                <xs:documentation xml:lang="en">Properties (e.g., environment settings) set during test execution</xs:documentation>
               </xs:annotation>
-							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="pre-string">
-										<xs:attribute name="message" type="xs:string">
-											<xs:annotation>
-												<xs:documentation xml:lang="en">The error message. e.g., if a java exception is thrown, the return value of getMessage()</xs:documentation>
-											</xs:annotation>
-										</xs:attribute>
-										<xs:attribute name="type" type="xs:string" use="required">
-											<xs:annotation>
-												<xs:documentation xml:lang="en">The type of error that occured. e.g., if a java execption is thrown the full class name of the exception.</xs:documentation>
-											</xs:annotation>
-										</xs:attribute>
-									</xs:extension>
-								</xs:simpleContent>
-							</xs:complexType>
-						</xs:element>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="name" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:token">
+                            <xs:minLength value="1"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                      <xs:attribute name="value" type="xs:string" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
 
-						<xs:element name="failure">
+            <xs:element name="system-out">
               <xs:annotation>
-                <xs:documentation xml:lang="en">Indicates that the test failed. A failure is a test which the code has explicitly failed by using the mechanisms for that purpose. e.g., via an assertEquals. Contains as a text node relevant data for the failure, e.g., a stack trace</xs:documentation>
+                <xs:documentation xml:lang="en">Data that was written to standard out while the test was executed</xs:documentation>
               </xs:annotation>
-							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="pre-string">
-										<xs:attribute name="message" type="xs:string">
-											<xs:annotation>
-												<xs:documentation xml:lang="en">The message specified in the assert</xs:documentation>
-											</xs:annotation>
-										</xs:attribute>
-										<xs:attribute name="type" type="xs:string" use="required">
-											<xs:annotation>
-												<xs:documentation xml:lang="en">The type of the assert.</xs:documentation>
-											</xs:annotation>
-										</xs:attribute>
-									</xs:extension>
-								</xs:simpleContent>
-							</xs:complexType>
-						</xs:element>
+              <xs:simpleType>
+                <xs:restriction base="pre-string">
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
 
-					</xs:choice>
+            <xs:element name="system-err">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Data that was written to standard error while the test was executed</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="pre-string">
+                  <xs:whiteSpace value="preserve"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+
+          </xs:sequence>
 
 					<xs:attribute name="name" type="xs:token" use="required">
 						<xs:annotation>
@@ -145,29 +186,6 @@ Permission to waive conditions of this license may be requested from Windy Road 
 
 				</xs:complexType>
 			</xs:element>
-
-			<xs:element name="system-out">
-				<xs:annotation>
-					<xs:documentation xml:lang="en">Data that was written to standard out while the test was executed</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="pre-string">
-						<xs:whiteSpace value="preserve"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-
-			<xs:element name="system-err">
-				<xs:annotation>
-					<xs:documentation xml:lang="en">Data that was written to standard error while the test was executed</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="pre-string">
-						<xs:whiteSpace value="preserve"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-
 		</xs:sequence>
 
 		<xs:attribute name="name" use="required">
@@ -216,17 +234,22 @@ Permission to waive conditions of this license may be requested from Windy Road 
 			</xs:annotation>
 		</xs:attribute>
 
-		<xs:attribute name="time" type="xs:decimal" use="required">
+		<xs:attribute name="successed" type="xs:int" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The total number of tests in the suite that successfuly executed.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="skipped" type="xs:int" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The total number of tests in the suite that skiped due to any reason.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
+    <xs:attribute name="time" type="xs:decimal" use="required">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">Time taken (in seconds) to execute the tests in the suite</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-
-	<xs:simpleType name="pre-string">
-		<xs:restriction base="xs:string">
-			<xs:whiteSpace value="preserve"/>
-		</xs:restriction>
-	</xs:simpleType>
-
 </xs:schema>
