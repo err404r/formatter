@@ -6,5 +6,4 @@ Also this aproach better for demonstarting my skills. But I used unit tests from
 For building JUnit xml I found xml schema(http://windyroad.com.au/dl/Open%20Source/JUnit.xsd) and modify it, to fit the task requirement.
 
 TODO:
-- Add unit tests for properties section
 - Improve test failure error message

@@ -48,4 +48,11 @@ describe "some example specs" do
     $stdout.puts "Test"
     $stderr.puts "Bar"
   end
+
+  context 'with properties in context', :cntx => 123 do
+    it "should have access proeprties from metadata", :mdata => "qwe" do |example|
+      expect(example.metadata[:cntx]).to eql(123)
+      expect(example.metadata[:mdata]).to eql("qwe")
+    end
+  end
 end

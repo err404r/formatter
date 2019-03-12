@@ -61,7 +61,7 @@ describe ESRFormatter do
     expect(testsuite).not_to be(nil)
 
     expect(testsuite['name']).to eql('rspec')
-    expect(testsuite['tests']).to eql('12')
+    expect(testsuite['tests']).to eql('13')
     expect(testsuite['skipped']).to eql('1')
     expect(testsuite['failures']).to eql('8')
     expect(testsuite['errors']).to eql('0')
@@ -71,7 +71,7 @@ describe ESRFormatter do
 
     # it has some test cases
 
-    expect(testcases.size).to eql(12)
+    expect(testcases.size).to eql(13)
 
     testcases.each do |testcase|
       expect(testcase['classname']).to eql('')
@@ -81,7 +81,7 @@ describe ESRFormatter do
 
     # it has successful test cases
 
-    expect(successful_testcases.size).to eql(3)
+    expect(successful_testcases.size).to eql(4)
 
     successful_testcases.each do |testcase|
       expect(testcase.element_children.size).to eql(4)
@@ -153,5 +153,9 @@ describe ESRFormatter do
     # it correctly captures stdout / stderr output
     expect(doc.xpath('//testcase/system-out').text).to eql("Test\n")
     expect(doc.xpath('//testcase/system-err').text).to eql("Bar\n")
+
+    # it correctly dump properties
+    expect(doc.xpath("//testcase[contains(@name, 'properties')]/properties/property[contains(@name, 'cntx')]").first[:value]).to eql("123")
+    expect(doc.xpath("//testcase[contains(@name, 'properties')]/properties/property[contains(@name, 'mdata')]").first[:value]).to eql("qwe")
   end
 end
