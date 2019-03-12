@@ -7,5 +7,4 @@ For building JUnit xml I found xml schema(http://windyroad.com.au/dl/Open%20Sour
 
 TODO:
 - Add unit tests for properties section
-- Add files to build gem from this repository to make formatter easy to distribute between build nodes
 - Improve test failure error message
